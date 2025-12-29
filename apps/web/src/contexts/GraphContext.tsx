@@ -60,6 +60,19 @@ import {
 import { debounce } from "lodash";
 import { useThreadContext } from "./ThreadProvider";
 import { useAssistantContext } from "./AssistantContext";
+
+/**
+ * Migrates old/invalid model names to their current valid equivalents.
+ * This is needed because model names stored in thread metadata may be outdated.
+ */
+const migrateModelName = (modelName: string): ALL_MODEL_NAMES => {
+  const migrations: Record<string, ALL_MODEL_NAMES> = {
+    "gemini-1.5-flash": "gemini-1.5-flash-002",
+    // Add more migrations here if needed in the future
+  };
+
+  return (migrations[modelName] || modelName) as ALL_MODEL_NAMES;
+};
 import { StreamWorkerService } from "@/workers/graph-stream/streamWorker";
 import { useQueryState } from "nuqs";
 
@@ -560,7 +573,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
                   );
                 updatedArtifactRestContent = highlightedText.fullMarkdown.slice(
                   startIndexOfHighlightedText +
-                    highlightedText.markdownBlock.length
+                  highlightedText.markdownBlock.length
                 );
               }
 
@@ -976,7 +989,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
                   );
                 updatedArtifactRestContent = highlightedText.fullMarkdown.slice(
                   startIndexOfHighlightedText +
-                    highlightedText.markdownBlock.length
+                  highlightedText.markdownBlock.length
                 );
               }
 
@@ -1359,11 +1372,12 @@ export function GraphProvider({ children }: { children: ReactNode }) {
 
     // Set the model name and config
     if (thread.metadata?.customModelName) {
-      threadData.setModelName(
-        thread.metadata.customModelName as ALL_MODEL_NAMES
+      const migratedModelName = migrateModelName(
+        thread.metadata.customModelName as string
       );
+      threadData.setModelName(migratedModelName);
       threadData.setModelConfig(
-        thread.metadata.customModelName as ALL_MODEL_NAMES,
+        migratedModelName,
         thread.metadata.modelConfig as CustomModelConfig
       );
     } else {

@@ -1,4 +1,4 @@
-import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { StateGraph, START } from "@langchain/langgraph";
 import { SummarizerGraphAnnotation, SummarizeState } from "./state.js";
 import { HumanMessage } from "@langchain/core/messages";
@@ -25,9 +25,10 @@ Ensure you include ALL of the following messages in the summary. Do NOT follow a
 export async function summarizer(
   state: SummarizeState
 ): Promise<Partial<SummarizeState>> {
-  const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-latest",
+  const model = new ChatGoogleGenerativeAI({
+    model: "gemini-2.0-flash",
   });
+
 
   const messagesToSummarize = formatMessages(state.messages);
 

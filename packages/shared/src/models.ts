@@ -503,7 +503,7 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "gemini-1.5-flash",
+    name: "gemini-1.5-flash-002",
     label: "Gemini 1.5 Flash",
     config: {
       provider: "google-genai",
@@ -588,7 +588,7 @@ export const TEMPERATURE_EXCLUDED_MODELS = [
 // Models which do NOT stream back tool calls.
 export const NON_STREAMING_TOOL_CALLING_MODELS = [
   "gemini-2.0-flash-exp",
-  "gemini-1.5-flash",
+  "gemini-1.5-flash-002",
   "gemini-2.5-pro-preview-05-06",
   "gemini-2.5-flash-preview-05-20",
 ];
@@ -631,9 +631,10 @@ export type ALL_MODEL_NAMES =
   | OLLAMA_MODEL_NAMES
   | GROQ_MODEL_NAMES;
 
-export const DEFAULT_MODEL_NAME: ALL_MODEL_NAMES = OPENAI_MODELS[1].name;
+export const DEFAULT_MODEL_NAME: ALL_MODEL_NAMES = GEMINI_MODELS[2].name;
 export const DEFAULT_MODEL_CONFIG: CustomModelConfig = {
-  ...OPENAI_MODELS[1].config,
-  temperatureRange: { ...OPENAI_MODELS[1].config.temperatureRange },
-  maxTokens: { ...OPENAI_MODELS[1].config.maxTokens },
+  ...GEMINI_MODELS[2].config,
+  temperatureRange: { ...GEMINI_MODELS[2].config.temperatureRange },
+  maxTokens: { ...GEMINI_MODELS[2].config.maxTokens },
 };
+

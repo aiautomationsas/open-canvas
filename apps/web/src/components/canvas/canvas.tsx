@@ -29,6 +29,20 @@ import {
 import { CHAT_COLLAPSED_QUERY_PARAM } from "@/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 
+/**
+ * Migrates old/invalid model names to their current valid equivalents.
+ * This is needed because model names stored in thread metadata may be outdated.
+ */
+const migrateModelName = (modelName: string): ALL_MODEL_NAMES => {
+  const migrations: Record<string, ALL_MODEL_NAMES> = {
+    "gemini-1.5-flash": "gemini-1.5-flash-002",
+    // Add more migrations here if needed in the future
+  };
+
+  return (migrations[modelName] || modelName) as ALL_MODEL_NAMES;
+};
+
+
 export function CanvasComponent() {
   const { graphData } = useGraphContext();
   const { setModelName, setModelConfig } = useThreadContext();
@@ -113,18 +127,14 @@ export function CanvasComponent() {
               // Chat should only be "started" if there are messages present
               if ((thread.values as Record<string, any>)?.messages?.length) {
                 setChatStarted(true);
-                if (thread?.metadata?.customModelName) {
-                  setModelName(
-                    thread.metadata.customModelName as ALL_MODEL_NAMES
-                  );
-                } else {
-                  setModelName(DEFAULT_MODEL_NAME);
-                }
+                const migratedModelName = thread?.metadata?.customModelName
+                  ? migrateModelName(thread.metadata.customModelName as string)
+                  : DEFAULT_MODEL_NAME;
+                setModelName(migratedModelName);
 
                 if (thread?.metadata?.modelConfig) {
                   setModelConfig(
-                    (thread?.metadata?.customModelName ??
-                      DEFAULT_MODEL_NAME) as ALL_MODEL_NAMES,
+                    migratedModelName,
                     (thread.metadata?.modelConfig ??
                       DEFAULT_MODEL_CONFIG) as CustomModelConfig
                   );
@@ -165,18 +175,14 @@ export function CanvasComponent() {
                 // Chat should only be "started" if there are messages present
                 if ((thread.values as Record<string, any>)?.messages?.length) {
                   setChatStarted(true);
-                  if (thread?.metadata?.customModelName) {
-                    setModelName(
-                      thread.metadata.customModelName as ALL_MODEL_NAMES
-                    );
-                  } else {
-                    setModelName(DEFAULT_MODEL_NAME);
-                  }
+                  const migratedModelName = thread?.metadata?.customModelName
+                    ? migrateModelName(thread.metadata.customModelName as string)
+                    : DEFAULT_MODEL_NAME;
+                  setModelName(migratedModelName);
 
                   if (thread?.metadata?.modelConfig) {
                     setModelConfig(
-                      (thread?.metadata.customModelName ??
-                        DEFAULT_MODEL_NAME) as ALL_MODEL_NAMES,
+                      migratedModelName,
                       (thread.metadata.modelConfig ??
                         DEFAULT_MODEL_CONFIG) as CustomModelConfig
                     );
